@@ -4,7 +4,7 @@ require 'spfquery/version'
 
 Gem::Specification.new do |gem|
   gem.name          = "ruby-spfquery"
-  gem.version       = '0.0.1'
+  gem.version       = Spfquery::VERSION
   gem.authors       = ['Brett Gibson']
   gem.email         = ['bdg@brettdgibson.com']
   gem.description   = %q{very thin ruby wrapper for spfquery cli}
