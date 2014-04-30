@@ -1,4 +1,5 @@
 require 'stringio'
+require 'open3'
 
 class Spfquery
   attr_reader :ip, :sender, :helo
@@ -18,7 +19,13 @@ class Spfquery
   end
 
   def result
-    @result ||= output.lines.first.chomp.downcase
+    @result ||= begin
+                  if line = output.lines.first
+                    line.chomp.downcase
+                  else
+                    'none'
+                  end
+                end
   end
 
   private
@@ -28,6 +35,10 @@ class Spfquery
   end
 
   def run_spfquery
-    `spfquery --ip=#{ip} --sender=#{sender} #{" --helo=#{helo}" if helo} 2>/dev/null`
+    args = ['spfquery', "--ip=#{ip}", "--sender=#{sender}"]
+    args << "--helo=#{helo}"  if helo
+    Open3.popen3(*args) do |stdin, stdout, stderr, wait_thr|
+      stdout.read
+    end
   end
 end

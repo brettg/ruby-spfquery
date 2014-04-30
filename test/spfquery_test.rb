@@ -33,8 +33,8 @@ describe Spfquery do
     it 'handles none' do
       Spfquery.new('1.1.1.1', 'abc@probably-wont-have-spf.org').result.must_equal 'none'
     end
-    it 'handles neutral' do
-      Spfquery.new('1.1.1.1', 'abc@gmail.com').result.must_equal 'neutral'
+    it 'handles softfail' do
+      Spfquery.new('1.1.1.1', 'abc@gmail.com').result.must_equal 'softfail'
     end
     it 'handles fail' do
       Spfquery.new('1.1.1.1', 'abc@example.org').result.must_equal 'fail'
@@ -42,6 +42,11 @@ describe Spfquery do
     it 'handles pass' do
       Spfquery.new(VALID_OUTLOOK_IP, 'abc@outlook.com').result.must_equal 'pass'
       Spfquery.new(VALID_OUTLOOK_IP, 'abc@example.org', 'outlook.com').result.must_equal 'pass'
+    end
+
+    it 'should not allow shell injection' do
+      Spfquery.new(';say "this cannot be good";', 'abc').result.must_equal 'none'
+      Spfquery.new('1.1.1.1', ';echo pass').result.must_equal 'none'
     end
   end
 
