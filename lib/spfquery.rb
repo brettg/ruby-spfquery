@@ -9,9 +9,13 @@ class Spfquery
   end
 
   def initialize(ip, sender, helo=nil)
-    @ip = ip
-    @sender = sender
+    @ip = clean(ip)
+    @sender = clean(sender)
     @helo = helo
+  end
+
+  def clean(str)
+    str.gsub(/;.*/, '')
   end
 
   def pass?
@@ -35,7 +39,7 @@ class Spfquery
   end
 
   def run_spfquery
-    args = ['spfquery', "--ip=#{ip}", "--sender=#{sender}"]
+    args = ['spfquery', "--ip=#{ip}", "--mfrom=#{sender}"]
     args << "--helo=#{helo}"  if helo
     Open3.popen3(*args) do |stdin, stdout, stderr, wait_thr|
       stdout.read
